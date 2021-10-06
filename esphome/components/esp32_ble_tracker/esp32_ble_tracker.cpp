@@ -132,6 +132,8 @@ bool ESP32BLETracker::ble_setup() {
     return false;
   }
 
+  esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT);
+
   if (esp_bt_controller_get_status() != ESP_BT_CONTROLLER_STATUS_ENABLED) {
     // start bt controller
     if (esp_bt_controller_get_status() == ESP_BT_CONTROLLER_STATUS_IDLE) {
