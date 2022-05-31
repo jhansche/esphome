@@ -204,6 +204,7 @@ void BedJetHub::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t ga
       uint32_t now = millis();
       auto delta = now - this->last_notify_;
 
+      // TODO: decide how to delegate status updates to children. See update(), publish_state().
       if (this->last_notify_ == 0 || delta > MIN_NOTIFY_THROTTLE || this->force_refresh_) {
         bool needs_extra = this->codec_->decode_notify(param->notify.value, param->notify.value_len);
         this->last_notify_ = now;
@@ -300,7 +301,9 @@ void BedJetHub::setup_time_() {
 /* Internal */
 
 void BedJetHub::loop() {}
-void BedJetHub::update() {}
+void BedJetHub::update() {
+  this->publish_state();
+}
 
 void BedJetHub::dump_config() {
   ESP_LOGCONFIG(TAG, "BedJet Hub (%d components):", this->children_.size());

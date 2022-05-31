@@ -249,6 +249,7 @@ void Bedjet::control(const ClimateCall &call) {
 }
 
 void Bedjet::on_status(BedjetStatusPacket *data) {
+  ESP_LOGV(TAG, "[%s] Handling on_status with data=%p", (void*) data);
   auto converted_temp = bedjet_temp_to_c(data->target_temp_step);
   if (converted_temp > 0)
     this->target_temperature = converted_temp;
