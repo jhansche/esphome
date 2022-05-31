@@ -5,10 +5,7 @@
 namespace esphome {
 namespace bedjet {
 
-void BedJetHub::register_child(BedJetClient *obj) {
-  this->children_.push_back(obj);
-  obj->register_parent(this);
-}
+/* Public */
 
 void BedJetHub::upgrade_firmware() {
   auto *pkt = this->codec_->get_button_request(MAGIC_UPDATE);
@@ -19,8 +16,9 @@ void BedJetHub::upgrade_firmware() {
   }
 }
 
-//region BTLE
- uint8_t Bedjet::write_bedjet_packet_(BedjetPacket *pkt) {
+/* Bluetooth/GATT */
+
+uint8_t BedJetHub::write_bedjet_packet_(BedjetPacket *pkt) {
   if (!this->is_connected()) {
     if (!this->parent_->enabled) {
       ESP_LOGI(TAG, "[%s] Cannot write packet: Not connected, enabled=false", this->get_name().c_str());
@@ -34,7 +32,8 @@ void BedJetHub::upgrade_firmware() {
                                          ESP_GATT_AUTH_REQ_NONE);
   return status;
 }
-//endregion
+
+/* Time Component */
 
 #ifdef USE_TIME
 void BedJetHub::send_local_time_() {
@@ -70,6 +69,13 @@ void BedJetHub::setup_time_() {
   }
 }
 #endif
+
+/* Internal */
+
+void BedJetHub::register_child(BedJetClient *obj) {
+  this->children_.push_back(obj);
+  obj->register_parent(this);
+}
 
 } //namespace bedjet
 } //namespace esphome
