@@ -3,6 +3,7 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 
+#include "bedjet_child.h"
 #include "bedjet_const.h"
 
 namespace esphome {
