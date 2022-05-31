@@ -49,7 +49,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_TIME_ID): cv.invalid(
                 "The 'time_id' option has been moved to the `bedjet` component."
             ),
-            cv.Optional(CONF_RECEIVE_TIMEOUT, default="0s"): cv.invalid(
+            cv.Optional(CONF_RECEIVE_TIMEOUT): cv.invalid(
                 "The 'receive_timeout' option has been moved to the `bedjet` component."
             ),
         }
