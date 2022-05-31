@@ -7,6 +7,7 @@
 #include "esphome/core/hal.h"
 #include "bedjet_base.h"
 #include "bedjet_child.h"
+#include "bedjet_climate.h"
 
 #ifdef USE_TIME
 #include "esphome/components/time/real_time_clock.h"
