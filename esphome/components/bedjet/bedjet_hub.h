@@ -41,10 +41,7 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::AFTER_WIFI; }
 
-  void register_child(BedJetClient *obj) {
-    this->children_.push_back(obj);
-    obj->register_parent(this);
-  }
+  void register_child(BedJetClient *obj);
 
   void set_status_timeout(uint32_t timeout) { this->timeout_ = timeout; }
   /** Attempts to check for and apply firmware updates. */
