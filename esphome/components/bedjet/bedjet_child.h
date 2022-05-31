@@ -6,7 +6,7 @@
 namespace esphome {
 namespace bedjet {
 
-struct BedJetClient {
+class BedJetClient {
  public:
   void register_parent(BedJetHub *parent) {
     this->parent_ = parent;
@@ -19,5 +19,3 @@ struct BedJetClient {
 
 } //namespace bedjet
 } //namespace esphome
-
-#endif

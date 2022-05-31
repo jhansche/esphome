@@ -17,7 +17,7 @@
 namespace esphome {
 namespace bedjet {
 
-class Bedjet : public climate::Climate, public PollingComponent, public BedJetClient {
+class Bedjet : public climate::Climate, public BedJetClient, public PollingComponent {
  public:
   void setup() override;
   void loop() override;
