@@ -23,6 +23,7 @@ namespace espbt = esphome::esp32_ble_tracker;
 
 // Enable temporary cross-reference: see bedjet_climate.h
 class Bedjet;
+class BedJetClient;
 
 static const espbt::ESPBTUUID BEDJET_SERVICE_UUID = espbt::ESPBTUUID::from_raw("00001000-bed0-0080-aa55-4265644a6574");
 static const espbt::ESPBTUUID BEDJET_STATUS_UUID = espbt::ESPBTUUID::from_raw("00002000-bed0-0080-aa55-4265644a6574");
