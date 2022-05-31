@@ -344,8 +344,6 @@ void Bedjet::on_status(BedjetStatusPacket *data) {
     this->parent_->codec_->clear_status();
     this->status_clear_warning();
   }
-
-  return true;
 }
 
 /** Attempts to update the climate device from the last received BedjetStatusPacket.
