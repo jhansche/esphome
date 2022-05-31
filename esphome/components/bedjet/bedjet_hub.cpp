@@ -299,6 +299,13 @@ void BedJetHub::setup_time_() {
 
 /* Internal */
 
+void BedJetHub::loop() {}
+void BedJetHub::update() {}
+
+void BedJetHub::dump_config() {
+  ESP_LOGCONFIG(TAG, "BedJet Hub (%d children)", this->children_.size());
+}
+
 void BedJetHub::publish_state() {
   optional<BedjetStatusPacket> status = this->codec_->get_status_packet();
   if (status.has_value()) {
