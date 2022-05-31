@@ -56,7 +56,8 @@ async def to_code(config):
     # TODO: compat layer
     if ble_client.CONF_BLE_CLIENT_ID in config:
         # TODO: this is deprecated, replaced by bedjet_id
-        await ble_client.register_ble_node(var, config)
+        # await ble_client.register_ble_node(var, config)
+        yield
     elif CONF_BEDJET_ID in config:
         await register_bedjet_child(var, config)
 
