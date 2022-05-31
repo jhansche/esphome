@@ -17,7 +17,7 @@ class BedJetClient {
 
  protected:
   friend BedJetHub;
-  virtual std::string describe();
+  virtual std::string describe() = "";
   BedJetHub *parent_{};
 };
 
