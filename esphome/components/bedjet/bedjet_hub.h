@@ -60,6 +60,10 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
 
   std::vector<BedJetClient *> children_;
 
+#ifdef USE_TIME
+  optional<time::RealTimeClock *> time_id_{};
+#endif
+
   uint32_t timeout_{DEFAULT_STATUS_TIMEOUT};
   static const uint32_t MIN_NOTIFY_THROTTLE = 5000;
   static const uint32_t NOTIFY_WARN_THRESHOLD = 300000;

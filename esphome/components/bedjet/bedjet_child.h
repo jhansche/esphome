@@ -17,7 +17,7 @@ class BedJetClient {
 
  protected:
   BedJetHub *parent_{};
-}
+};
 
 } //namespace bedjet
 } //namespace esphome
