@@ -300,9 +300,9 @@ void BedJetHub::setup_time_() {
 /* Internal */
 
 void BedJetHub::publish_state() {
-  auto packet = this->codec_->get_status_packet();
-  if (packet.has_value()) {
-    auto data = packet.get();
+  auto status = this->codec_->get_status_packet();
+  if (status.has_value()) {
+    auto data = *status;
     for (auto *child : this->children_) {
       child->on_status(data);
     }
