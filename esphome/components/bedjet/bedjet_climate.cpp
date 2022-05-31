@@ -355,7 +355,7 @@ bool Bedjet::update_status_() {
     return false;
 
   BedjetStatusPacket status = *this->parent_->codec_->get_status_packet();
-
+  return false;
 }
 
 void Bedjet::update() {
