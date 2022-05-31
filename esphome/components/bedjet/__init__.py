@@ -36,19 +36,6 @@ BEDJET_CLIENT_SCHEMA = cv.Schema(
     }
 )
 
-# TODO: compat layer
-BEDJET_CLIENT_COMPAT_SCHEMA = cv.Schema(
-    {
-        cv.Optional(CONF_BEDJET_ID): cv.use_id(BedJetHub),
-    }
-)
-# TODO: compat layer
-BLE_CLIENT_COMPAT_SCHEMA = cv.Schema(
-    {
-        cv.Optional(ble_client.CONF_BLE_CLIENT_ID): cv.use_id(ble_client.BLEClient),
-    }
-)
-
 
 async def register_bedjet_child(var, config):
     parent = await cg.get_variable(config[CONF_BEDJET_ID])

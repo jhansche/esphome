@@ -84,10 +84,6 @@ void Bedjet::setup() {
     // Initial status is unknown until we connect
     this->reset_state_();
   }
-
-#ifdef USE_TIME
-  this->setup_time_();
-#endif
 }
 
 /** Resets states to defaults. */
@@ -246,26 +242,6 @@ void Bedjet::control(const ClimateCall &call) {
     }
   }
 }
-
-#ifdef USE_TIME
-/** Attempts to sync the local time (via `time_id`) to the BedJet device. */
-void Bedjet::send_local_time_() {
-  this->parent_->send_local_time_();
-}
-
-/** Initializes time sync callbacks to support syncing current time to the BedJet. */
-void Bedjet::setup_time_() {
-  if (this->time_id_.has_value()) {
-    this->send_local_time_();
-    auto *time_id = *this->time_id_;
-    time_id->add_on_time_sync_callback([this] { this->send_local_time_(); });
-    time::ESPTime now = time_id->now();
-    ESP_LOGD(TAG, "Using time component to set BedJet clock: %d:%02d", now.hour, now.minute);
-  } else {
-    ESP_LOGI(TAG, "`time_id` is not configured: will not sync BedJet clock.");
-  }
-}
-#endif
 
 void Bedjet::on_status(BedjetStatusPacket *data) {
   auto converted_temp = bedjet_temp_to_c(data->target_temp_step);

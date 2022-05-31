@@ -1,6 +1,8 @@
+import logging
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import climate, ble_client, time
+from esphome.components import climate, ble_client
 from esphome.const import (
     CONF_HEAT_MODE,
     CONF_ID,
@@ -8,12 +10,11 @@ from esphome.const import (
     CONF_TIME_ID,
 )
 from . import (
-    BEDJET_CLIENT_COMPAT_SCHEMA,
-    BLE_CLIENT_COMPAT_SCHEMA,
-    CONF_BEDJET_ID,
+    BEDJET_CLIENT_SCHEMA,
     register_bedjet_child,
 )
 
+_LOGGER = logging.getLogger(__name__)
 CODEOWNERS = ["@jhansche"]
 DEPENDENCIES = ["ble_client"]
 
@@ -27,24 +28,33 @@ BEDJET_HEAT_MODES = {
     "extended": BedjetHeatMode.HEAT_MODE_EXTENDED,
 }
 
-CONFIG_SCHEMA = cv.All(
+CONFIG_SCHEMA = (
     climate.CLIMATE_SCHEMA.extend(
         {
             cv.GenerateID(): cv.declare_id(Bedjet),
             cv.Optional(CONF_HEAT_MODE, default="heat"): cv.enum(
                 BEDJET_HEAT_MODES, lower=True
             ),
-            cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
-            cv.Optional(
-                CONF_RECEIVE_TIMEOUT, default="0s"
-            ): cv.positive_time_period_milliseconds,
         }
     )
-    .extend(BLE_CLIENT_COMPAT_SCHEMA)
-    .extend(BEDJET_CLIENT_COMPAT_SCHEMA)
-    .extend(cv.polling_component_schema("30s")),
-    # TODO: compat layer
-    cv.has_exactly_one_key(ble_client.CONF_BLE_CLIENT_ID, CONF_BEDJET_ID),
+    .extend(cv.polling_component_schema("30s"))
+    .extend(
+        # TODO: remove compat layer.
+        {
+            cv.Optional(ble_client.CONF_BLE_CLIENT_ID): cv.invalid(
+                "The 'ble_client_id' option has been removed. Please migrate "
+                "to the new `bedjet_id` option in the `bedjet` component.\n"
+                "See https://esphome.io/components/climate/bedjet.html"
+            ),
+            cv.Optional(CONF_TIME_ID): cv.invalid(
+                "The 'time_id' option has been moved to the `bedjet` component."
+            ),
+            cv.Optional(CONF_RECEIVE_TIMEOUT, default="0s"): cv.invalid(
+                "The 'receive_timeout' option has been moved to the `bedjet` component."
+            ),
+        }
+    )
+    .extend(BEDJET_CLIENT_SCHEMA)
 )
 
 
@@ -52,21 +62,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await climate.register_climate(var, config)
-
-    # TODO: compat layer
-    if ble_client.CONF_BLE_CLIENT_ID in config:
-        # TODO: this is deprecated, replaced by bedjet_id
-        # await ble_client.register_ble_node(var, config)
-        raise cv.Invalid("TODO: compat layer still using ble_client_id!")
-
-    elif CONF_BEDJET_ID in config:
-        await register_bedjet_child(var, config)
+    await register_bedjet_child(var, config)
 
     cg.add(var.set_heating_mode(config[CONF_HEAT_MODE]))
-
-    # TODO: move to parent
-    if CONF_TIME_ID in config:
-        time_ = await cg.get_variable(config[CONF_TIME_ID])
-        cg.add(var.set_time_id(time_))
-    if CONF_RECEIVE_TIMEOUT in config:
-        cg.add(var.set_status_timeout(config[CONF_RECEIVE_TIMEOUT]))

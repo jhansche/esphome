@@ -8,10 +8,6 @@
 #include "bedjet_child.h"
 #include "bedjet_hub.h"
 
-#ifdef USE_TIME
-#include "esphome/components/time/real_time_clock.h"
-#endif
-
 #ifdef USE_ESP32
 
 namespace esphome {
@@ -30,19 +26,6 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
 
   /** Sets the default strategy to use for climate::CLIMATE_MODE_HEAT. */
   void set_heating_mode(BedjetHeatMode mode) { this->heating_mode_ = mode; }
-
-#ifdef USE_TIME
-  void set_time_id(time::RealTimeClock *time_id) {
-    this->parent_->set_time_id(time_id);
-  }
-#endif
-
-  // FIXME: remove
-  void set_status_timeout(uint32_t timeout) { this->parent_->set_status_timeout(timeout); }
-
-  /** Attempts to check for and apply firmware updates. */
-  // FIXME: remove
-  void upgrade_firmware();
 
   climate::ClimateTraits traits() override {
     auto traits = climate::ClimateTraits();
@@ -88,13 +71,6 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
 
   // FIXME remove
   bool force_refresh_ = false;
-#ifdef USE_TIME
-  // TODO: deprecated
-  void setup_time_();
-  void send_local_time_();
-  // FIXME: remove
-  optional<time::RealTimeClock *> time_id_{};
-#endif
 
   BedjetHeatMode heating_mode_ = HEAT_MODE_HEAT;
 
