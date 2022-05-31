@@ -275,22 +275,8 @@ uint8_t Bedjet::write_bedjet_packet_(BedjetPacket *pkt) {
 
 /** Configures the local ESP BLE client to register (`true`) or unregister (`false`) for status notifications. */
 uint8_t Bedjet::set_notify_(const bool enable) {
-  uint8_t status;
-  if (enable) {
-    status = esp_ble_gattc_register_for_notify(this->parent_->gattc_if, this->parent_->remote_bda,
-                                               this->char_handle_status_);
-    if (status) {
-      ESP_LOGW(TAG, "[%s] esp_ble_gattc_register_for_notify failed, status=%d", this->get_name().c_str(), status);
-    }
-  } else {
-    status = esp_ble_gattc_unregister_for_notify(this->parent_->gattc_if, this->parent_->remote_bda,
-                                                 this->char_handle_status_);
-    if (status) {
-      ESP_LOGW(TAG, "[%s] esp_ble_gattc_unregister_for_notify failed, status=%d", this->get_name().c_str(), status);
-    }
-  }
-  ESP_LOGV(TAG, "[%s] set_notify: enable=%d; result=%d", this->get_name().c_str(), enable, status);
-  return status;
+  // FIXME: remove
+  return this->parent_->set_notify_(enable);
 }
 
 /** Attempts to update the climate device from the last received BedjetStatusPacket.

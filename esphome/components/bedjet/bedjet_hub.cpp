@@ -33,6 +33,26 @@ uint8_t BedJetHub::write_bedjet_packet_(BedjetPacket *pkt) {
   return status;
 }
 
+/** Configures the local ESP BLE client to register (`true`) or unregister (`false`) for status notifications. */
+uint8_t Bedjet::set_notify_(const bool enable) {
+  uint8_t status;
+  if (enable) {
+    status = esp_ble_gattc_register_for_notify(this->parent_->gattc_if, this->parent_->remote_bda,
+                                               this->char_handle_status_);
+    if (status) {
+      ESP_LOGW(TAG, "[%s] esp_ble_gattc_register_for_notify failed, status=%d", this->get_name().c_str(), status);
+    }
+  } else {
+    status = esp_ble_gattc_unregister_for_notify(this->parent_->gattc_if, this->parent_->remote_bda,
+                                                 this->char_handle_status_);
+    if (status) {
+      ESP_LOGW(TAG, "[%s] esp_ble_gattc_unregister_for_notify failed, status=%d", this->get_name().c_str(), status);
+    }
+  }
+  ESP_LOGV(TAG, "[%s] set_notify: enable=%d; result=%d", this->get_name().c_str(), enable, status);
+  return status;
+}
+
 void BedJetHub::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if, esp_ble_gattc_cb_param_t *param) {
   switch (event) {
     case ESP_GATTC_DISCONNECT_EVT: {
