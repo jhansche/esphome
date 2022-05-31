@@ -30,7 +30,7 @@ static const espbt::ESPBTUUID BEDJET_STATUS_UUID = espbt::ESPBTUUID::from_raw("0
 static const espbt::ESPBTUUID BEDJET_COMMAND_UUID = espbt::ESPBTUUID::from_raw("00002004-bed0-0080-aa55-4265644a6574");
 static const espbt::ESPBTUUID BEDJET_NAME_UUID = espbt::ESPBTUUID::from_raw("00002001-bed0-0080-aa55-4265644a6574");
 
-class BedJetHub : public esphome::ble_client::BLEClientNode, public Component {
+class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingComponent {
  public:
   void setup() override {
     this->codec_ = make_unique<BedjetCodec>();
