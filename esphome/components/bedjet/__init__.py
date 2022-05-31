@@ -13,13 +13,13 @@ MULTI_CONF = True
 CONF_BEDJET_ID = "bedjet_id"
 
 bedjet_ns = cg.esphome_ns.namespace("bedjet")
-BedjetHub = bedjet_ns.class_("BedjetHub", ble_client.BLEClientNode, cg.PollingComponent)
+BedJetHub = bedjet_ns.class_("BedJetHub", ble_client.BLEClientNode, cg.PollingComponent)
 
 CONFIG_SCHEMA = (
     # FIXME: add name/get_name (from climate and other components)
     cv.COMPONENT_SCHEMA.extend(
         {
-            cv.GenerateID(): cv.declare_id(BedjetHub),
+            cv.GenerateID(): cv.declare_id(BedJetHub),
             cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
             cv.Optional(
                 CONF_RECEIVE_TIMEOUT, default="0s"
@@ -32,14 +32,14 @@ CONFIG_SCHEMA = (
 
 BEDJET_CLIENT_SCHEMA = cv.Schema(
     {
-        cv.Required(CONF_BEDJET_ID): cv.use_id(BedjetHub),
+        cv.Required(CONF_BEDJET_ID): cv.use_id(BedJetHub),
     }
 )
 
 # TODO: compat layer
 BEDJET_CLIENT_COMPAT_SCHEMA = cv.Schema(
     {
-        cv.Optional(CONF_BEDJET_ID): cv.use_id(BedjetHub),
+        cv.Optional(CONF_BEDJET_ID): cv.use_id(BedJetHub),
     }
 )
 # TODO: compat layer
