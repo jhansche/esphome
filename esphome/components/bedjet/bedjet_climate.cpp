@@ -267,30 +267,21 @@ void Bedjet::setup_time_() {
 }
 #endif
 
-/** Attempts to update the climate device from the last received BedjetStatusPacket.
- *
- * @return `true` if the status has been applied; `false` if there is nothing to apply.
- */
-bool Bedjet::update_status_() {
-  if (!this->parent_->codec_->has_status())
-    return false;
-
-  BedjetStatusPacket status = *this->parent_->codec_->get_status_packet();
-
-  auto converted_temp = bedjet_temp_to_c(status.target_temp_step);
+void Bedjet::on_status(BedjetStatusPacket *data) {
+  auto converted_temp = bedjet_temp_to_c(data->target_temp_step);
   if (converted_temp > 0)
     this->target_temperature = converted_temp;
-  converted_temp = bedjet_temp_to_c(status.ambient_temp_step);
+  converted_temp = bedjet_temp_to_c(data->ambient_temp_step);
   if (converted_temp > 0)
     this->current_temperature = converted_temp;
 
-  const auto *fan_mode_name = bedjet_fan_step_to_fan_mode(status.fan_step);
+  const auto *fan_mode_name = bedjet_fan_step_to_fan_mode(data->fan_step);
   if (fan_mode_name != nullptr) {
     this->custom_fan_mode = *fan_mode_name;
   }
 
   // TODO: Get biorhythm data to determine which preset (M1-3) is running, if any.
-  switch (status.mode) {
+  switch (data->mode) {
     case MODE_WAIT:  // Biorhythm "wait" step: device is idle
     case MODE_STANDBY:
       this->mode = climate::CLIMATE_MODE_OFF;
@@ -344,7 +335,7 @@ bool Bedjet::update_status_() {
       break;
 
     default:
-      ESP_LOGW(TAG, "[%s] Unexpected mode: 0x%02X", this->get_name().c_str(), status.mode);
+      ESP_LOGW(TAG, "[%s] Unexpected mode: 0x%02X", this->get_name().c_str(), data->mode);
       break;
   }
 
@@ -355,6 +346,18 @@ bool Bedjet::update_status_() {
   }
 
   return true;
+}
+
+/** Attempts to update the climate device from the last received BedjetStatusPacket.
+ *
+ * @return `true` if the status has been applied; `false` if there is nothing to apply.
+ */
+bool Bedjet::update_status_() {
+  if (!this->parent_->codec_->has_status())
+    return false;
+
+  BedjetStatusPacket status = *this->parent_->codec_->get_status_packet();
+
 }
 
 void Bedjet::update() {
