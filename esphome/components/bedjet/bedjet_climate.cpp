@@ -44,8 +44,8 @@ static BedjetButton heat_button(BedjetHeatMode mode) {
   return btn;
 }
 
-std::string Bedjet::describe() override {
-  return "BedJet Climate"
+std::string Bedjet::describe() {
+  return "BedJet Climate";
 }
 
 void Bedjet::dump_config() {
@@ -57,9 +57,9 @@ void Bedjet::dump_config() {
     ESP_LOGCONFIG(TAG, "   - %s", LOG_STR_ARG(climate_mode_to_string(mode)));
   }
   if (this->heating_mode_ == HEAT_MODE_EXTENDED) {
-    ESP_LOGCONFIG(TAG, "   - BedJet heating mode: EXT HT")
+    ESP_LOGCONFIG(TAG, "   - BedJet heating mode: EXT HT");
   } else {
-    ESP_LOGCONFIG(TAG, "   - BedJet heating mode: HEAT")
+    ESP_LOGCONFIG(TAG, "   - BedJet heating mode: HEAT");
   }
 
   ESP_LOGCONFIG(TAG, "  Supported fan modes:");
