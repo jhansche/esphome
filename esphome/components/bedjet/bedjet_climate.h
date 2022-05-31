@@ -31,7 +31,8 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
   }
 #endif
 
-  void set_status_timeout(uint32_t timeout) { this->timeout_ = timeout; }
+  // FIXME: remove
+  void set_status_timeout(uint32_t timeout) { this->parent_->set_status_timeout(timeout); }
   /** Sets the default strategy to use for climate::CLIMATE_MODE_HEAT. */
   void set_heating_mode(BedjetHeatMode mode) { this->heating_mode_ = mode; }
 
