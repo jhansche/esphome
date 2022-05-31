@@ -44,7 +44,7 @@ CONFIG_SCHEMA = cv.All(
     .extend(BEDJET_CLIENT_COMPAT_SCHEMA)
     .extend(cv.polling_component_schema("30s")),
     # TODO: compat layer
-    cv.has_at_most_one_key(ble_client.CONF_BLE_CLIENT_ID, CONF_BEDJET_ID),
+    cv.has_exactly_one_key(ble_client.CONF_BLE_CLIENT_ID, CONF_BEDJET_ID),
 )
 
 
