@@ -23,6 +23,7 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
 
   /* BedJetClient status update */
   void on_status(BedjetStatusPacket*) override;
+  std::string describe() override;
 
   /** Sets the default strategy to use for climate::CLIMATE_MODE_HEAT. */
   void set_heating_mode(BedjetHeatMode mode) { this->heating_mode_ = mode; }

@@ -303,7 +303,10 @@ void BedJetHub::loop() {}
 void BedJetHub::update() {}
 
 void BedJetHub::dump_config() {
-  ESP_LOGCONFIG(TAG, "BedJet Hub (%d children)", this->children_.size());
+  ESP_LOGCONFIG(TAG, "BedJet Hub (%d components):", this->children_.size());
+  for (auto *child : this->children_) {
+    ESP_LOGCONFIG(TAG, "    - %s", child->describe());
+  }
 }
 
 void BedJetHub::publish_state() {

@@ -16,6 +16,8 @@ class BedJetClient {
   virtual void on_status(BedjetStatusPacket *data) = 0;
 
  protected:
+  friend BedJetHub;
+  virtual std::string describe();
   BedJetHub *parent_{};
 };
 
