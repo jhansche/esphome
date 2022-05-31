@@ -45,12 +45,7 @@ static BedjetButton heat_button(BedjetHeatMode mode) {
 }
 
 void Bedjet::upgrade_firmware() {
-  auto *pkt = this->parent_->codec_->get_button_request(MAGIC_UPDATE);
-  auto status = this->write_bedjet_packet_(pkt);
-
-  if (status) {
-    ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->address_str().c_str(), status);
-  }
+  this->parent_->upgrade_firmware();
 }
 
 void Bedjet::dump_config() {
@@ -497,18 +492,8 @@ void Bedjet::setup_time_() {
 
 /** Writes one BedjetPacket to the BLE client on the BEDJET_COMMAND_UUID. */
 uint8_t Bedjet::write_bedjet_packet_(BedjetPacket *pkt) {
-  if (this->node_state != espbt::ClientState::ESTABLISHED) {
-    if (!this->parent_->enabled) {
-      ESP_LOGI(TAG, "[%s] Cannot write packet: Not connected, enabled=false", this->get_name().c_str());
-    } else {
-      ESP_LOGW(TAG, "[%s] Cannot write packet: Not connected", this->get_name().c_str());
-    }
-    return -1;
-  }
-  auto status = esp_ble_gattc_write_char(this->parent_->gattc_if, this->parent_->conn_id, this->char_handle_cmd_,
-                                         pkt->data_length + 1, (uint8_t *) &pkt->command, ESP_GATT_WRITE_TYPE_NO_RSP,
-                                         ESP_GATT_AUTH_REQ_NONE);
-  return status;
+  // FIXME: remove
+  return this->parent_->write_bedjet_packet_(pkt);
 }
 
 /** Configures the local ESP BLE client to register (`true`) or unregister (`false`) for status notifications. */

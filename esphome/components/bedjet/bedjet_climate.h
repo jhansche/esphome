@@ -36,6 +36,10 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
   /** Sets the default strategy to use for climate::CLIMATE_MODE_HEAT. */
   void set_heating_mode(BedjetHeatMode mode) { this->heating_mode_ = mode; }
 
+  /** Attempts to check for and apply firmware updates. */
+  // FIXME: remove
+  void upgrade_firmware();
+
   climate::ClimateTraits traits() override {
     auto traits = climate::ClimateTraits();
     traits.set_supports_action(true);
