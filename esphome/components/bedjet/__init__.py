@@ -16,6 +16,7 @@ bedjet_ns = cg.esphome_ns.namespace("bedjet")
 BedjetHub = bedjet_ns.class_("BedjetHub", ble_client.BLEClientNode, cg.PollingComponent)
 
 CONFIG_SCHEMA = (
+    # FIXME: add name/get_name (from climate and other components)
     cv.COMPONENT_SCHEMA.extend(
         {
             cv.GenerateID(): cv.declare_id(BedjetHub),

@@ -131,7 +131,7 @@ void Bedjet::control(const ClimateCall &call) {
         return;
     }
 
-    auto status = this->write_bedjet_packet_(pkt);
+    auto status = this->parent_->write_bedjet_packet_(pkt);
 
     if (status) {
       ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->parent_->address_str().c_str(), status);
@@ -147,7 +147,7 @@ void Bedjet::control(const ClimateCall &call) {
   if (call.get_target_temperature().has_value()) {
     auto target_temp = *call.get_target_temperature();
     auto *pkt = this->parent_->codec_->get_set_target_temp_request(target_temp);
-    auto status = this->write_bedjet_packet_(pkt);
+    auto status = this->parent_->write_bedjet_packet_(pkt);
 
     if (status) {
       ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->parent_->address_str().c_str(), status);
@@ -167,7 +167,7 @@ void Bedjet::control(const ClimateCall &call) {
       return;
     }
 
-    auto status = this->write_bedjet_packet_(pkt);
+    auto status = this->parent_->write_bedjet_packet_(pkt);
     if (status) {
       ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->parent_->address_str().c_str(), status);
     } else {
@@ -196,7 +196,7 @@ void Bedjet::control(const ClimateCall &call) {
       return;
     }
 
-    auto status = this->write_bedjet_packet_(pkt);
+    auto status = this->parent_->write_bedjet_packet_(pkt);
     if (status) {
       ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->parent_->address_str().c_str(), status);
     } else {
@@ -223,7 +223,7 @@ void Bedjet::control(const ClimateCall &call) {
       return;
     }
 
-    auto status = this->write_bedjet_packet_(pkt);
+    auto status = this->parent_->write_bedjet_packet_(pkt);
     if (status) {
       ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->parent_->address_str().c_str(), status);
     } else {
@@ -237,7 +237,7 @@ void Bedjet::control(const ClimateCall &call) {
                fan_step);
       // The index should represent the fan_step index.
       BedjetPacket *pkt = this->parent_->codec_->get_set_fan_speed_request(fan_step);
-      auto status = this->write_bedjet_packet_(pkt);
+      auto status = this->parent_->write_bedjet_packet_(pkt);
       if (status) {
         ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->parent_->address_str().c_str(), status);
       } else {

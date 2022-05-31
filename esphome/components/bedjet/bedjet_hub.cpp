@@ -19,6 +19,22 @@ void BedJetHub::upgrade_firmware() {
   }
 }
 
+//region BTLE
+ uint8_t Bedjet::write_bedjet_packet_(BedjetPacket *pkt) {
+  if (!this->is_connected()) {
+    if (!this->parent_->enabled) {
+      ESP_LOGI(TAG, "[%s] Cannot write packet: Not connected, enabled=false", this->get_name().c_str());
+    } else {
+      ESP_LOGW(TAG, "[%s] Cannot write packet: Not connected", this->get_name().c_str());
+    }
+    return -1;
+  }
+  auto status = esp_ble_gattc_write_char(this->parent_->gattc_if, this->parent_->conn_id, this->char_handle_cmd_,
+                                         pkt->data_length + 1, (uint8_t *) &pkt->command, ESP_GATT_WRITE_TYPE_NO_RSP,
+                                         ESP_GATT_AUTH_REQ_NONE);
+  return status;
+}
+//endregion
 
 #ifdef USE_TIME
 void BedJetHub::send_local_time_() {
