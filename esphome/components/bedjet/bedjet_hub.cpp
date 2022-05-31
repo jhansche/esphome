@@ -302,7 +302,7 @@ void BedJetHub::setup_time_() {
 void BedJetHub::publish_state() {
   optional<BedjetStatusPacket> status = this->codec_->get_status_packet();
   if (status.has_value()) {
-    auto *data = &status.get();
+    auto *data = status.value();
     for (auto *child : this->children_) {
       child->on_status(data);
     }
