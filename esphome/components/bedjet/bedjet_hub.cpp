@@ -34,7 +34,7 @@ uint8_t BedJetHub::write_bedjet_packet_(BedjetPacket *pkt) {
 }
 
 /** Configures the local ESP BLE client to register (`true`) or unregister (`false`) for status notifications. */
-uint8_t Bedjet::set_notify_(const bool enable) {
+uint8_t BedJetHub::set_notify_(const bool enable) {
   uint8_t status;
   if (enable) {
     status = esp_ble_gattc_register_for_notify(this->parent_->gattc_if, this->parent_->remote_bda,
@@ -298,6 +298,12 @@ void BedJetHub::setup_time_() {
 #endif
 
 /* Internal */
+
+void BedJetHub::publish_state() {
+  for (auto *child : this->children_) {
+    child->on_status(this->codec_->get_status_packet().get());
+  }
+}
 
 void BedJetHub::register_child(BedJetClient *obj) {
   this->children_.push_back(obj);

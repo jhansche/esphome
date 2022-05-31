@@ -62,6 +62,7 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
   std::vector<BedJetClient *> children_;
   // FIXME
   std::string get_name() { return "TODO::get_name"; }
+  void publish_state();
 
 #ifdef USE_TIME
   void setup_time_();
