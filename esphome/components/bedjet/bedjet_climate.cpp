@@ -267,18 +267,6 @@ void Bedjet::setup_time_() {
 }
 #endif
 
-/** Writes one BedjetPacket to the BLE client on the BEDJET_COMMAND_UUID. */
-uint8_t Bedjet::write_bedjet_packet_(BedjetPacket *pkt) {
-  // FIXME: remove
-  return this->parent_->write_bedjet_packet_(pkt);
-}
-
-/** Configures the local ESP BLE client to register (`true`) or unregister (`false`) for status notifications. */
-uint8_t Bedjet::set_notify_(const bool enable) {
-  // FIXME: remove
-  return this->parent_->set_notify_(enable);
-}
-
 /** Attempts to update the climate device from the last received BedjetStatusPacket.
  *
  * @return `true` if the status has been applied; `false` if there is nothing to apply.

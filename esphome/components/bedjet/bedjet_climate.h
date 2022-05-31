@@ -85,7 +85,6 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
 
   // FIXME remove
   bool force_refresh_ = false;
-  uint8_t write_bedjet_packet_(BedjetPacket *pkt);
 #ifdef USE_TIME
   // TODO: deprecated
   void setup_time_();
