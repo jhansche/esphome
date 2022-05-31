@@ -105,7 +105,7 @@ void Bedjet::loop() {}
 
 void Bedjet::control(const ClimateCall &call) {
   ESP_LOGD(TAG, "Received Bedjet::control");
-  if (this->node_state != espbt::ClientState::ESTABLISHED) {
+  if (!this->parent_->is_connected()) {
     ESP_LOGW(TAG, "Not connected, cannot handle control call yet.");
     return;
   }
@@ -457,23 +457,7 @@ uint8_t Bedjet::write_notify_config_descriptor_(bool enable) {
 #ifdef USE_TIME
 /** Attempts to sync the local time (via `time_id`) to the BedJet device. */
 void Bedjet::send_local_time_() {
-  if (this->node_state != espbt::ClientState::ESTABLISHED) {
-    ESP_LOGV(TAG, "[%s] Not connected, cannot send time.", this->get_name().c_str());
-    return;
-  }
-  auto *time_id = *this->time_id_;
-  time::ESPTime now = time_id->now();
-  if (now.is_valid()) {
-    uint8_t hour = now.hour;
-    uint8_t minute = now.minute;
-    BedjetPacket *pkt = this->parent_->codec_->get_set_time_request(hour, minute);
-    auto status = this->write_bedjet_packet_(pkt);
-    if (status) {
-      ESP_LOGW(TAG, "Failed setting BedJet clock: %d", status);
-    } else {
-      ESP_LOGD(TAG, "[%s] BedJet clock set to: %d:%02d", this->get_name().c_str(), hour, minute);
-    }
-  }
+  this->parent_->send_local_time_();
 }
 
 /** Initializes time sync callbacks to support syncing current time to the BedJet. */

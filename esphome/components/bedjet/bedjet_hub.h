@@ -53,6 +53,7 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
 
   void gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
                            esp_ble_gattc_cb_param_t *param) override;
+  bool is_connected() { return this->node_state == espbt::ClientState::ESTABLISHED; }
 
  protected:
   // FIXME: temporarily expose this.
@@ -61,6 +62,8 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
   std::vector<BedJetClient *> children_;
 
 #ifdef USE_TIME
+  void setup_time_();
+  void send_local_time_();
   optional<time::RealTimeClock *> time_id_{};
 #endif
 
