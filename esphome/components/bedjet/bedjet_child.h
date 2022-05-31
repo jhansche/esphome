@@ -13,7 +13,7 @@ class BedJetClient {
  public:
   void register_parent(BedJetHub *parent);
 
-  virtual void on_status(BedjetStatusPacket *data) {};
+  virtual void on_status(BedjetStatusPacket *data) = 0;
 
  protected:
   BedJetHub *parent_{};
