@@ -25,6 +25,9 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::AFTER_WIFI; }
 
+  /** Sets the default strategy to use for climate::CLIMATE_MODE_HEAT. */
+  void set_heating_mode(BedjetHeatMode mode) { this->heating_mode_ = mode; }
+
 #ifdef USE_TIME
   void set_time_id(time::RealTimeClock *time_id) {
     this->parent_->set_time_id(time_id);
@@ -33,8 +36,6 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
 
   // FIXME: remove
   void set_status_timeout(uint32_t timeout) { this->parent_->set_status_timeout(timeout); }
-  /** Sets the default strategy to use for climate::CLIMATE_MODE_HEAT. */
-  void set_heating_mode(BedjetHeatMode mode) { this->heating_mode_ = mode; }
 
   /** Attempts to check for and apply firmware updates. */
   // FIXME: remove
@@ -82,6 +83,8 @@ class Bedjet : public climate::Climate, public BedJetClient, public PollingCompo
  protected:
   void control(const climate::ClimateCall &call) override;
 
+  // FIXME remove
+  bool force_refresh_ = false;
 #ifdef USE_TIME
   // TODO: deprecated
   void setup_time_();
