@@ -8,10 +8,9 @@ namespace bedjet {
 
 class BedJetClient {
  public:
-  void register_parent(BedJetHub *parent) {
-    this->parent_ = parent;
-  };
-  void on_status(BedjetStatusPacket *data) {};
+  void register_parent(BedJetHub *parent);
+
+  virtual void on_status(BedjetStatusPacket *data) {};
 
  protected:
   BedJetHub *parent_{};
