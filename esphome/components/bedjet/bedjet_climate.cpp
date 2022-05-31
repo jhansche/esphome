@@ -372,7 +372,8 @@ bool Bedjet::update_status_() {
 void Bedjet::update() {
   ESP_LOGV(TAG, "[%s] update()", this->get_name().c_str());
 
-  if (this->node_state != espbt::ClientState::ESTABLISHED) {
+#if false
+  if (!this->parent_->is_connected()) {
     if (!this->parent()->enabled) {
       ESP_LOGD(TAG, "[%s] Not connected, because enabled=false", this->get_name().c_str());
     } else {
@@ -395,7 +396,7 @@ void Bedjet::update() {
       // But how do we know for sure which state we're in, and how do we actually clear out the buggy state?
 
       ESP_LOGI(TAG, "[%s] Still waiting for first GATT notify event.", this->get_name().c_str());
-      this->set_notify_(false);
+      this->parent_->set_notify_(false);
     } else if (diff > NOTIFY_WARN_THRESHOLD) {
       ESP_LOGW(TAG, "[%s] Last GATT notify was %d seconds ago.", this->get_name().c_str(), diff / 1000);
     }
@@ -406,6 +407,8 @@ void Bedjet::update() {
       this->parent()->set_enabled(true);
     }
   }
+#endif
+
 }
 
 }  // namespace bedjet
