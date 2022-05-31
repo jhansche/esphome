@@ -6,6 +6,9 @@
 namespace esphome {
 namespace bedjet {
 
+// Forward declaration
+class BedJetHub;
+
 class BedJetClient {
  public:
   void register_parent(BedJetHub *parent);
