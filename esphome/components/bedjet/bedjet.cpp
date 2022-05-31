@@ -45,7 +45,7 @@ static BedjetButton heat_button(BedjetHeatMode mode) {
 }
 
 void Bedjet::upgrade_firmware() {
-  auto *pkt = this->codec_->get_button_request(MAGIC_UPDATE);
+  auto *pkt = this->parent_->codec_->get_button_request(MAGIC_UPDATE);
   auto status = this->write_bedjet_packet_(pkt);
 
   if (status) {
@@ -80,8 +80,6 @@ void Bedjet::dump_config() {
 }
 
 void Bedjet::setup() {
-  this->codec_ = make_unique<BedjetCodec>();
-
   // restore set points
   auto restore = this->restore_state_();
   if (restore.has_value()) {
@@ -122,16 +120,16 @@ void Bedjet::control(const ClimateCall &call) {
     BedjetPacket *pkt;
     switch (mode) {
       case climate::CLIMATE_MODE_OFF:
-        pkt = this->codec_->get_button_request(BTN_OFF);
+        pkt = this->parent_->codec_->get_button_request(BTN_OFF);
         break;
       case climate::CLIMATE_MODE_HEAT:
-        pkt = this->codec_->get_button_request(heat_button(this->heating_mode_));
+        pkt = this->parent_->codec_->get_button_request(heat_button(this->heating_mode_));
         break;
       case climate::CLIMATE_MODE_FAN_ONLY:
-        pkt = this->codec_->get_button_request(BTN_COOL);
+        pkt = this->parent_->codec_->get_button_request(BTN_COOL);
         break;
       case climate::CLIMATE_MODE_DRY:
-        pkt = this->codec_->get_button_request(BTN_DRY);
+        pkt = this->parent_->codec_->get_button_request(BTN_DRY);
         break;
       default:
         ESP_LOGW(TAG, "Unsupported mode: %d", mode);
@@ -153,7 +151,7 @@ void Bedjet::control(const ClimateCall &call) {
 
   if (call.get_target_temperature().has_value()) {
     auto target_temp = *call.get_target_temperature();
-    auto *pkt = this->codec_->get_set_target_temp_request(target_temp);
+    auto *pkt = this->parent_->codec_->get_set_target_temp_request(target_temp);
     auto status = this->write_bedjet_packet_(pkt);
 
     if (status) {
@@ -168,7 +166,7 @@ void Bedjet::control(const ClimateCall &call) {
     BedjetPacket *pkt;
 
     if (preset == climate::CLIMATE_PRESET_BOOST) {
-      pkt = this->codec_->get_button_request(BTN_TURBO);
+      pkt = this->parent_->codec_->get_button_request(BTN_TURBO);
     } else {
       ESP_LOGW(TAG, "Unsupported preset: %d", preset);
       return;
@@ -189,15 +187,15 @@ void Bedjet::control(const ClimateCall &call) {
     BedjetPacket *pkt;
 
     if (preset == "M1") {
-      pkt = this->codec_->get_button_request(BTN_M1);
+      pkt = this->parent_->codec_->get_button_request(BTN_M1);
     } else if (preset == "M2") {
-      pkt = this->codec_->get_button_request(BTN_M2);
+      pkt = this->parent_->codec_->get_button_request(BTN_M2);
     } else if (preset == "M3") {
-      pkt = this->codec_->get_button_request(BTN_M3);
+      pkt = this->parent_->codec_->get_button_request(BTN_M3);
     } else if (preset == "LTD HT") {
-      pkt = this->codec_->get_button_request(BTN_HEAT);
+      pkt = this->parent_->codec_->get_button_request(BTN_HEAT);
     } else if (preset == "EXT HT") {
-      pkt = this->codec_->get_button_request(BTN_EXTHT);
+      pkt = this->parent_->codec_->get_button_request(BTN_EXTHT);
     } else {
       ESP_LOGW(TAG, "Unsupported preset: %s", preset.c_str());
       return;
@@ -219,11 +217,11 @@ void Bedjet::control(const ClimateCall &call) {
     auto fan_mode = *call.get_fan_mode();
     BedjetPacket *pkt;
     if (fan_mode == climate::CLIMATE_FAN_LOW) {
-      pkt = this->codec_->get_set_fan_speed_request(3 /* = 20% */);
+      pkt = this->parent_->codec_->get_set_fan_speed_request(3 /* = 20% */);
     } else if (fan_mode == climate::CLIMATE_FAN_MEDIUM) {
-      pkt = this->codec_->get_set_fan_speed_request(9 /* = 50% */);
+      pkt = this->parent_->codec_->get_set_fan_speed_request(9 /* = 50% */);
     } else if (fan_mode == climate::CLIMATE_FAN_HIGH) {
-      pkt = this->codec_->get_set_fan_speed_request(14 /* = 75% */);
+      pkt = this->parent_->codec_->get_set_fan_speed_request(14 /* = 75% */);
     } else {
       ESP_LOGW(TAG, "[%s] Unsupported fan mode: %s", this->get_name().c_str(),
                LOG_STR_ARG(climate_fan_mode_to_string(fan_mode)));
@@ -243,7 +241,7 @@ void Bedjet::control(const ClimateCall &call) {
       ESP_LOGV(TAG, "[%s] Converted fan mode %s to bedjet fan step %d", this->get_name().c_str(), fan_mode.c_str(),
                fan_step);
       // The index should represent the fan_step index.
-      BedjetPacket *pkt = this->codec_->get_set_fan_speed_request(fan_step);
+      BedjetPacket *pkt = this->parent_->codec_->get_set_fan_speed_request(fan_step);
       auto status = this->write_bedjet_packet_(pkt);
       if (status) {
         ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", this->parent_->address_str().c_str(), status);
@@ -347,7 +345,7 @@ void Bedjet::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc
       }
       if (param->read.handle == this->char_handle_status_) {
         // This is the additional packet that doesn't fit in the notify packet.
-        this->codec_->decode_extra(param->read.value, param->read.value_len);
+        this->parent_->codec_->decode_extra(param->read.value, param->read.value_len);
       } else if (param->read.handle == this->char_handle_name_) {
         // The data should represent the name.
         if (param->read.status == ESP_GATT_OK && param->read.value_len > 0) {
@@ -406,7 +404,7 @@ void Bedjet::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc
       auto delta = now - this->last_notify_;
 
       if (this->last_notify_ == 0 || delta > MIN_NOTIFY_THROTTLE || this->force_refresh_) {
-        bool needs_extra = this->codec_->decode_notify(param->notify.value, param->notify.value_len);
+        bool needs_extra = this->parent_->codec_->decode_notify(param->notify.value, param->notify.value_len);
         this->last_notify_ = now;
 
         if (needs_extra) {
@@ -473,7 +471,7 @@ void Bedjet::send_local_time_() {
   if (now.is_valid()) {
     uint8_t hour = now.hour;
     uint8_t minute = now.minute;
-    BedjetPacket *pkt = this->codec_->get_set_time_request(hour, minute);
+    BedjetPacket *pkt = this->parent_->codec_->get_set_time_request(hour, minute);
     auto status = this->write_bedjet_packet_(pkt);
     if (status) {
       ESP_LOGW(TAG, "Failed setting BedJet clock: %d", status);
@@ -538,10 +536,10 @@ uint8_t Bedjet::set_notify_(const bool enable) {
  * @return `true` if the status has been applied; `false` if there is nothing to apply.
  */
 bool Bedjet::update_status_() {
-  if (!this->codec_->has_status())
+  if (!this->parent_->codec_->has_status())
     return false;
 
-  BedjetStatusPacket status = *this->codec_->get_status_packet();
+  BedjetStatusPacket status = *this->parent_->codec_->get_status_packet();
 
   auto converted_temp = bedjet_temp_to_c(status.target_temp_step);
   if (converted_temp > 0)
@@ -616,7 +614,7 @@ bool Bedjet::update_status_() {
 
   if (this->is_valid_()) {
     this->publish_state();
-    this->codec_->clear_status();
+    this->parent_->codec_->clear_status();
     this->status_clear_warning();
   }
 

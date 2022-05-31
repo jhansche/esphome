@@ -5,11 +5,14 @@
 #include "esphome/core/defines.h"
 #include "esphome/core/hal.h"
 #include "bedjet_base.h"
+#include "bedjet_child.h"
 #include "bedjet_hub.h"
 
 #ifdef USE_TIME
 #include "esphome/components/time/real_time_clock.h"
 #endif
+
+#ifdef USE_ESP32
 
 namespace esphome {
 namespace bedjet {

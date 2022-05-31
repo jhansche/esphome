@@ -6,6 +6,7 @@
 #include "esphome/core/defines.h"
 #include "esphome/core/hal.h"
 #include "bedjet_base.h"
+#include "bedjet_child.h"
 
 #ifdef USE_TIME
 #include "esphome/components/time/real_time_clock.h"
@@ -27,7 +28,9 @@ static const espbt::ESPBTUUID BEDJET_NAME_UUID = espbt::ESPBTUUID::from_raw("000
 
 class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingComponent {
  public:
-  void setup() override;
+  void setup() override {
+    this->codec_ = make_unique<BedjetCodec>();
+  }
   void loop() override;
   void update() override;
   void dump_config() override;
@@ -50,6 +53,9 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
                            esp_ble_gattc_cb_param_t *param) override;
 
  protected:
+  // FIXME: temporarily expose this.
+  friend Bedjet;
+
   std::vector<BedJetClient *> children_;
 
   uint32_t timeout_{DEFAULT_STATUS_TIMEOUT};
@@ -71,17 +77,6 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
 
   uint8_t write_notify_config_descriptor_(bool enable);
 };
-
-struct BedJetClient {
- public:
-  void register_parent(BedJetHub *parent) {
-    this->parent_ = parent;
-  };
-  void on_status(BedjetStatusPacket *data) {};
-
- protected:
-  optional<BedJetHub *> parent_{};
-}
 
 } //namespace bedjet
 } //namespace esphome
