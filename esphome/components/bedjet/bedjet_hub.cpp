@@ -146,7 +146,7 @@ void BedJetHub::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t ga
       }
       if (param->read.handle == this->char_handle_status_) {
         // This is the additional packet that doesn't fit in the notify packet.
-        this->parent_->codec_->decode_extra(param->read.value, param->read.value_len);
+        this->codec_->decode_extra(param->read.value, param->read.value_len);
       } else if (param->read.handle == this->char_handle_name_) {
         // The data should represent the name.
         if (param->read.status == ESP_GATT_OK && param->read.value_len > 0) {
@@ -205,7 +205,7 @@ void BedJetHub::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t ga
       auto delta = now - this->last_notify_;
 
       if (this->last_notify_ == 0 || delta > MIN_NOTIFY_THROTTLE || this->force_refresh_) {
-        bool needs_extra = this->parent_->codec_->decode_notify(param->notify.value, param->notify.value_len);
+        bool needs_extra = this->codec_->decode_notify(param->notify.value, param->notify.value_len);
         this->last_notify_ = now;
 
         if (needs_extra) {
