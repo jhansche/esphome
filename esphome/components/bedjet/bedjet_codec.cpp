@@ -92,6 +92,10 @@ bool BedjetCodec::decode_notify(const uint8_t *data, uint16_t length) {
 
   if (data[1] == PACKET_FORMAT_V3_HOME && data[3] == PACKET_TYPE_STATUS) {
     // Clear old buffer
+    ESP_LOGD(TAG, "Writing %d bytes to @%p, from @%p. Clearing 0..%d(%d) first.",
+             length, &this->buf_, data, sizeof(BedjetStatusPacket), sizeof(this->buf_));
+    assert(this != nullptr);
+    assert(&this->buf_ != nullptr);
     memset(&this->buf_, 0, sizeof(BedjetStatusPacket));
     // Copy new data into buffer
     memcpy(&this->buf_, data, length);
