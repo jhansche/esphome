@@ -115,7 +115,10 @@ class BedJetHub : public esphome::ble_client::BLEClientNode, public PollingCompo
   void loop() override;
   void update() override;
   void dump_config() override;
-  void setup() override { this->codec_ = make_unique<BedjetCodec>(); }
+  void setup() override {
+    ESP_LOGD(TAG, "BedJetHub::setup");
+    this->codec_ = make_unique<BedjetCodec>();
+  }
   float get_setup_priority() const override { return setup_priority::AFTER_WIFI; }
 
   /** @return The BedJet's configured name, or the MAC address if not discovered yet. */

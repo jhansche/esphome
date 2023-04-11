@@ -375,6 +375,8 @@ void BedJetHub::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t ga
         this->processing_ = true;
         ESP_LOGVV(TAG, "[%s] Decoding packet: last=%d, delta=%d, force=%s", this->get_name().c_str(),
                   this->last_notify_, delta, this->force_refresh_ ? "y" : "n");
+        assert(this->codec_ != nullptr);
+        ESP_LOGD(TAG, "codec = %p", &this->codec_);
         bool needs_extra = this->codec_->decode_notify(param->notify.value, param->notify.value_len);
 
         if (needs_extra) {
